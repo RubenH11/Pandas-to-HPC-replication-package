@@ -1,0 +1,320 @@
+
+
+library(dplyr)
+# Assuming your CSV file is named 'my_data.csv' and is in your current working directory
+df <- read.csv('run_table.csv')
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# adds DFO_type collumn which can take either value of COMPUTE either MEMORY
+# based on the DFO name:
+# 'isna', 'mean', 'sort', 'groupby', 'drop' is for COMPUTE, the rest are MEMORY
+
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'),
+                           'COMPUTE',
+                           'MEMORY'))
+# You can view the first few rows of the dataframe
+head(df)
+
+# Set DFO, Library, DataFrame.size, and DFO_type as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+df$DataFrame.size <- as.factor(df$DataFrame.size)
+df$DFO_type <- as.factor(df$DFO_type)
+
+levels(df$DFO)
+levels(df$Library)
+levels(df$DataFrame.size)
+levels(df$DFO_type)
+
+# PLOTTING STARTS FROM HERE
+
+# RUN BEFORE THE REST !!!
+#
+# definiton of filter by library and then select the collumns that we are actually using
+# -> discards X__run_id and X__done
+
+# if there is no library sent, it will just do the selection, with no filtration
+
+filter_df_by_libs <- function(data, libraries = NULL) {
+  if (!is.null(libraries) && length(libraries) > 0) {
+    filtered_data <- data %>%
+      filter(Library %in% libraries)
+  } else {
+    filtered_data <- data  # No filtering, use the original data
+  }
+
+  selected_data <- filtered_data %>% # removes columns: X__run_id, X__done
+    select(DFO, Library, DataFrame.size, execution_time, num_dfos_per_joule, cpu_utilisation, memory_usage, DFO_type)
+
+  return(selected_data)
+}
+
+workable_df <- filter_df_by_libs(df)
+
+head(workable_df)
+
+# RUN BEFORE THE REST !!!
+
+library(ggplot2)
+
+# definition of plotting functions (box and density) (sqater is defined much lower)
+
+plot_density_for_df <- function(data, df_size, x_upper_limit, x_lower_limit=0, DFO_type="") {
+  filtered_data <- data %>%
+    filter(DataFrame.size %in% c(df_size)) %>%
+    select(DFO, Library, DataFrame.size, execution_time, num_dfos_per_joule, cpu_utilisation, memory_usage, DFO_type)
+
+  grouped_data <- group_by(filtered_data)
+  grouped_split <- group_split(grouped_data)
+
+  lapply(grouped_split, function(group) {
+    ggplot(group, aes(x = num_dfos_per_joule, fill = Library)) +
+      geom_density(alpha = 0.7) +  # Add density plot
+      labs(title = paste("Data frame Size:", unique(group$DataFrame.size), DFO_type),
+           x = "Energy Efficiency (DFOs per Joule)",
+           y = "Density") +
+      xlim(x_lower_limit, x_upper_limit) +
+      scale_fill_manual(values = c("Pandas" = "green", "Polars" = "orange", "Dask" = "blue", "Modin" = "red")) +  # Set specific colors
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 20, face = "bold"),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 25),
+        axis.title = element_text(size = 17),
+        axis.text = element_text(size = 15)
+      )
+  })
+}
+
+plot_boxplot_for_df <- function(data, df_size, DFO_type="") {
+  if (DFO_type != "") {
+    DFO_type <- paste("  DFO type:", DFO_type)
+  }
+
+  filtered_data <- data %>%
+    filter(DataFrame.size %in% c(df_size)) %>%
+    select(DFO, Library, DataFrame.size, execution_time, num_dfos_per_joule, cpu_utilisation, memory_usage, DFO_type)
+
+  grouped_data <- group_by(filtered_data)
+  grouped_split <- group_split(grouped_data)
+
+  lapply(grouped_split, function(group) {
+    ggplot(group, aes(x = num_dfos_per_joule, fill = Library)) +
+      geom_boxplot(alpha = 0.7) +  # Add box plot
+      labs(title = paste("Data frame Size:", unique(group$DataFrame.size), DFO_type),
+           x = "Energy Efficiency (DFOs per Joule)",
+           y = "Density") +
+      scale_fill_manual(values = c("Pandas" = "green", "Polars" = "orange", "Dask" = "blue", "Modin" = "red")) +  # Set specific colors
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 20, face = "bold"),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 25),
+        axis.title = element_text(size = 17),
+        axis.text = element_text(size = 15)
+      )
+  })
+}
+
+# print density plots for ALL libraries
+
+plot_ <- plot_density_for_df(workable_df, "Small", 35)
+print(plot_)
+
+plot_ <- plot_density_for_df(workable_df, "Large", 35)
+print(plot_)
+
+# print box plots for ALL libraries
+
+plot_ <- plot_boxplot_for_df(workable_df, "Small")
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(workable_df, "Large")
+print(plot_)
+
+# RUN BEFORE DENSITY AND BOX-PLOTS!!!
+
+# split based on if dfos_per_joule are within the similar range
+
+# used for small
+df_modin <- filter_df_by_libs(df, c("Modin"))
+df_pandas_polars_dask <- filter_df_by_libs(df, c("Pandas", "Polars", "Dask"))
+
+# used for big
+df_pandas <- filter_df_by_libs(df, c("Pandas"))
+df_pandas_modin <- filter_df_by_libs(df, c("Pandas", "Modin"))
+df_polars_dask <- filter_df_by_libs(df, c("Polars", "Dask"))
+
+
+# density plots, but the ones that are having too high values compared to others are in a separate plot
+
+plot_ <- plot_density_for_df(df_modin, "Small", 0.4, 0.1)
+print(plot_)
+
+plot_ <- plot_density_for_df(df_pandas_polars_dask, "Small", 35)
+print(plot_)
+
+# plot_ <- plot_density_for_df(df_pandas, "Large", 2.8)
+# print(plot_)
+
+# plot_ <- plot_density_for_df(df_modin, "Large", 0.15)
+# print(plot_)
+
+plot_ <- plot_density_for_df(df_pandas_modin, "Large", 2.8)
+print(plot_)
+
+plot_ <- plot_density_for_df(df_polars_dask, "Large", 17)
+print(plot_)
+
+# box plots, but the ones that are having too high values compared to others are in a separate plot
+
+# TODO explain skeweness based on the visual observation of boxplots
+
+# small
+
+plot_ <- plot_boxplot_for_df(df_modin, "Small")
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_pandas_polars_dask, "Small")
+print(plot_)
+
+# big
+
+plot_ <- plot_boxplot_for_df(df_pandas_modin, "Large")
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_polars_dask, "Large")
+print(plot_)
+
+# RUN THIS BEFORE THE REST!!!
+
+# definition of scatter plot
+
+plot_scatter_for_energy_eff_and_metric <- function(data, df_size, library_name, performance_metric, x_label, metric_unit_x, line_color="blue") {
+  ggplot(data %>% filter(Library == library_name) %>% filter(DataFrame.size %in% c(df_size)), aes_string(y = performance_metric, x = "num_dfos_per_joule")) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, color = line_color) +  # Add a linear regression line
+    labs(title = paste("Energy Efficiency vs.", x_label, " - ", library_name, " - ", df_size),
+         y = paste(x_label, "(", metric_unit_x, ")"),
+         x = "Energy Efficiency (DFOs per Joule)") +
+    theme_minimal() +
+      theme(
+        plot.title = element_text(size = 15, face = "bold"),
+        axis.title = element_text(size = 17),
+        axis.text = element_text(size = 15)
+      )
+}
+
+plot_scater_for_both_sizes_and_all_corel_metrics <- function(library_name, line_color) {
+  # small
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Small", library_name,  "execution_time", "Execution Time", "s", line_color=line_color)
+  print(plot_)
+
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Small", library_name,  "cpu_utilisation", "CPU Utilisation Time", "%", line_color=line_color)
+  print(plot_)
+
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Small", library_name,  "memory_usage", "Memory Usage", "giga bytes", line_color=line_color)
+  print(plot_)
+
+  # large
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Large", library_name,  "execution_time", "Execution Time", "s", line_color=line_color)
+  print(plot_)
+
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Large", library_name,  "cpu_utilisation", "CPU Utilisation Time", "%", line_color=line_color)
+  print(plot_)
+
+  plot_ <- plot_scatter_for_energy_eff_and_metric(workable_df, "Large", library_name,  "memory_usage", "Memory Usage", "giga bytes", line_color=line_color)
+  print(plot_)
+}
+
+plot_scater_for_both_sizes_and_all_corel_metrics("Pandas", "green")
+
+plot_scater_for_both_sizes_and_all_corel_metrics("Polars", "orange")
+
+plot_scater_for_both_sizes_and_all_corel_metrics("Dask", "blue")
+
+plot_scater_for_both_sizes_and_all_corel_metrics("Modin", "red")
+
+filter_df_by_dfo_type <- function(data, types) {
+  filtered_data <- data %>%
+    filter(DFO_type %in% types)
+
+  selected_data <- filtered_data %>% # removes columns: X__run_id, X__done
+    select(DFO, Library, DataFrame.size, execution_time, num_dfos_per_joule, cpu_utilisation, memory_usage, DFO_type)
+
+  return(selected_data)
+}
+
+# used for small
+df_modin <- filter_df_by_libs(df, c("Modin"))
+df_pandas_polars_dask <- filter_df_by_libs(df, c("Pandas", "Polars", "Dask"))
+
+# used for big
+df_pandas <- filter_df_by_libs(df, c("Pandas"))
+df_pandas_modin <- filter_df_by_libs(df, c("Pandas", "Modin"))
+df_polars_dask <- filter_df_by_libs(df, c("Polars", "Dask"))
+
+# small :
+df_modin_mem <- filter_df_by_dfo_type(df_modin, c('MEMORY'))
+df_modin_comp <- filter_df_by_dfo_type(df_modin, c('COMPUTE'))
+
+df_pandas_polars_dask_mem <- filter_df_by_dfo_type(df_pandas_polars_dask, c('MEMORY'))
+df_pandas_polars_dask_comp <- filter_df_by_dfo_type(df_pandas_polars_dask, c('COMPUTE'))
+
+# plot_ <- plot_density_for_df(df_modin_mem, "Small", 0.4, 0.1, DFO_type='MEMORY')
+# print(plot_)
+
+# plot_ <- plot_density_for_df(df_modin_comp, "Small", 0.4, 0.1, DFO_type='COMPUTE')
+# print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_modin_mem, "Small", DFO_type='MEMORY')
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_modin_comp, "Small", DFO_type='COMPUTE')
+print(plot_)
+
+# plot_ <- plot_density_for_df(df_pandas_polars_dask_mem, "Small", 35, DFO_type='MEMORY')
+# print(plot_)
+
+# plot_ <- plot_density_for_df(df_pandas_polars_dask_comp, "Small", 35, DFO_type='COMPUTE')
+# print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_pandas_polars_dask_mem, "Small", DFO_type='MEMORY')
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_pandas_polars_dask_comp, "Small", DFO_type='COMPUTE')
+print(plot_)
+
+# large
+df_pandas_modin_mem <- filter_df_by_dfo_type(df_pandas_modin, c('MEMORY'))
+df_pandas_modin_comp <- filter_df_by_dfo_type(df_pandas_modin, c('COMPUTE'))
+
+df_polars_dask_mem <- filter_df_by_dfo_type(df_polars_dask, c('MEMORY'))
+df_polars_dask_comp <- filter_df_by_dfo_type(df_polars_dask, c('COMPUTE'))
+
+# plot_ <- plot_density_for_df(df_pandas_modin_mem, "Large", 0.15, DFO_type='MEMORY')
+# print(plot_)
+
+# plot_ <- plot_density_for_df(df_pandas_modin_comp, "Large", 0.15, DFO_type='COMPUTE')
+# print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_pandas_modin_mem, "Large", DFO_type='MEMORY')
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_pandas_modin_comp, "Large", DFO_type='COMPUTE')
+print(plot_)
+
+# plot_ <- plot_density_for_df(df_polars_dask_comp, "Large", 17, DFO_type='MEMORY')
+# print(plot_)
+
+# plot_ <- plot_density_for_df(df_polars_dask_mem, "Large", 17, DFO_type='COMPUTE')
+# print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_polars_dask_mem, "Large", DFO_type='MEMORY')
+print(plot_)
+
+plot_ <- plot_boxplot_for_df(df_polars_dask_comp, "Large", DFO_type='COMPUTE')
+print(plot_)

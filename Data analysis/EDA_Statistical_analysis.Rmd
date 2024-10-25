@@ -1,0 +1,60 @@
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(knitr)
+
+# Read the dataset
+df <- read.csv('run_table.csv')
+
+# Rename columns to avoid issues with spaces
+colnames(df)[colnames(df) == "DataFrame size"] <- "DataFrame.size"
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# Add DFO_type column based on DFO name
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'), 'COMPUTE', 'MEMORY'))
+
+# Set DFO, Library, DataFrame.size, and DFO_type as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+df$DataFrame.size <- as.factor(df$DataFrame.size)
+df$DFO_type <- as.factor(df$DFO_type)
+
+# Define function to calculate and print statistics directly
+calculate_and_print_stats <- function(data, library_name, size) {
+  stats <- data %>%
+    filter(Library == library_name, DataFrame.size == size) %>%
+    summarize(
+      execution_time_mean = mean(execution_time, na.rm = TRUE),
+      execution_time_median = median(execution_time, na.rm = TRUE),
+      execution_time_sd = sd(execution_time, na.rm = TRUE),
+      num_dfos_per_joule_mean = mean(num_dfos_per_joule, na.rm = TRUE),
+      num_dfos_per_joule_median = median(num_dfos_per_joule, na.rm = TRUE),
+      num_dfos_per_joule_sd = sd(num_dfos_per_joule, na.rm = TRUE),
+      cpu_utilisation_mean = mean(cpu_utilisation, na.rm = TRUE),
+      cpu_utilisation_median = median(cpu_utilisation, na.rm = TRUE),
+      cpu_utilisation_sd = sd(cpu_utilisation, na.rm = TRUE),
+      memory_usage_mean = mean(memory_usage, na.rm = TRUE),
+      memory_usage_median = median(memory_usage, na.rm = TRUE),
+      memory_usage_sd = sd(memory_usage, na.rm = TRUE)
+    )
+  
+  # Print each statistic
+  print(paste("Statistics for", library_name, "-", size, "DataFrame:"))
+  print(paste("Execution Time - Mean:", stats$execution_time_mean, "Median:", stats$execution_time_median, "SD:", stats$execution_time_sd))
+  print(paste("Num DFOs per Joule - Mean:", stats$num_dfos_per_joule_mean, "Median:", stats$num_dfos_per_joule_median, "SD:", stats$num_dfos_per_joule_sd))
+  print(paste("CPU Utilization - Mean:", stats$cpu_utilisation_mean, "Median:", stats$cpu_utilisation_median, "SD:", stats$cpu_utilisation_sd))
+  print(paste("Memory Usage - Mean:", stats$memory_usage_mean, "Median:", stats$memory_usage_median, "SD:", stats$memory_usage_sd))
+}
+
+# Print stats for each library and size combination
+calculate_and_print_stats(df, "Pandas", "Small")
+calculate_and_print_stats(df, "Pandas", "Large")
+calculate_and_print_stats(df, "Polars", "Small")
+calculate_and_print_stats(df, "Polars", "Large")
+calculate_and_print_stats(df, "Dask", "Small")
+calculate_and_print_stats(df, "Dask", "Large")
+calculate_and_print_stats(df, "Modin", "Small")
+calculate_and_print_stats(df, "Modin", "Large")

@@ -1,0 +1,91 @@
+# Load necessary libraries
+library(dplyr)
+install.packages("effsize")
+library(effsize)
+
+# Load data
+df <- read.csv('run_table.csv')
+
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# Assign DFO_type based on DFO name
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'), 'COMPUTE', 'MEMORY'))
+
+# Set categorical columns as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+df$DataFrame.size <- as.factor(df$DataFrame.size)
+df$DFO_type <- as.factor(df$DFO_type)
+
+# Function to perform Wilcoxon test
+perform_wilcoxon <- function(data, lib1, lib2, df_size) {
+  wilcox.test(
+    data$num_dfos_per_joule[data$Library == lib1 & data$DataFrame.size == df_size],
+    data$num_dfos_per_joule[data$Library == lib2 & data$DataFrame.size == df_size]
+  )
+}
+
+# Wilcoxon tests for Pandas vs. Polars, Pandas vs. Modin, Pandas vs. Dask, and Polars vs. Dask
+perform_wilcoxon(df, "Pandas", "Polars", "Small")
+perform_wilcoxon(df, "Pandas", "Polars", "Large")
+perform_wilcoxon(df, "Pandas", "Modin", "Small")
+perform_wilcoxon(df, "Pandas", "Modin", "Large")
+perform_wilcoxon(df, "Pandas", "Dask", "Small")
+perform_wilcoxon(df, "Pandas", "Dask", "Large")
+perform_wilcoxon(df, "Polars", "Modin", "Small")
+perform_wilcoxon(df, "Polars", "Modin", "Large")
+perform_wilcoxon(df, "Polars", "Dask", "Small")
+perform_wilcoxon(df, "Polars", "Dask", "Large")
+
+# Function to calculate Cliff's Delta
+calculate_cliffs_delta <- function(group1, group2) {
+  cliff.delta(group1, group2)
+}
+
+# Cliff's Delta for Pandas vs. Polars
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Small"],
+  df$num_dfos_per_joule[df$Library == "Polars" & df$DataFrame.size == "Small"]
+)
+
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Large"],
+  df$num_dfos_per_joule[df$Library == "Polars" & df$DataFrame.size == "Large"]
+)
+
+# Cliff's Delta for Pandas vs. Modin
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Small"],
+  df$num_dfos_per_joule[df$Library == "Modin" & df$DataFrame.size == "Small"]
+)
+
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Large"],
+  df$num_dfos_per_joule[df$Library == "Modin" & df$DataFrame.size == "Large"]
+)
+
+# Cliff's Delta for Pandas vs. Dask
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Small"],
+  df$num_dfos_per_joule[df$Library == "Dask" & df$DataFrame.size == "Small"]
+)
+
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Pandas" & df$DataFrame.size == "Large"],
+  df$num_dfos_per_joule[df$Library == "Dask" & df$DataFrame.size == "Large"]
+)
+
+# Cliff's Delta for Polars vs. Dask
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Polars" & df$DataFrame.size == "Small"],
+  df$num_dfos_per_joule[df$Library == "Dask" & df$DataFrame.size == "Small"]
+)
+
+calculate_cliffs_delta(
+  df$num_dfos_per_joule[df$Library == "Polars" & df$DataFrame.size == "Large"],
+  df$num_dfos_per_joule[df$Library == "Dask" & df$DataFrame.size == "Large"]
+)
+

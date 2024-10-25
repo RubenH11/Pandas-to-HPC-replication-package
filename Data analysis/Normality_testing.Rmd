@@ -1,0 +1,54 @@
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(bestNormalize)
+library(qqplotr)
+
+# Load the dataset
+df <- read.csv('run_table.csv')
+
+# Rename columns to remove spaces
+colnames(df)[colnames(df) == "DataFrame size"] <- "DataFrame.size"
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# Add DFO_type column based on DFO name
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'),
+                           'COMPUTE',
+                           'MEMORY'))
+
+# Set DFO, Library, DataFrame.size, and DFO_type as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+df$DataFrame.size <- as.factor(df$DataFrame.size)
+df$DFO_type <- as.factor(df$DFO_type)
+
+# Filter and clean data
+df <- df %>%
+  select(DFO, Library, DataFrame.size, execution_time, num_dfos_per_joule, cpu_utilisation, memory_usage, DFO_type)
+
+# Check that all required columns are present
+print(colnames(df))  # Verify the columns
+
+# Normalize the metrics
+df$norm_num_dfos_per_joule <- bestNormalize(df$num_dfos_per_joule)$x.t
+df$norm_execution_time <- bestNormalize(df$execution_time)$x.t
+df$norm_cpu_utilisation <- bestNormalize(df$cpu_utilisation)$x.t
+df$norm_memory_usage <- bestNormalize(df$memory_usage)$x.t
+
+# Confirm that normalized columns are added
+print(colnames(df))  # Check for the new normalized columns
+
+# Re-assign grouped_data after adding new columns
+grouped_data <- group_by(df, Library, DataFrame.size)
+
+# Re-examine normality after normalization
+normalized_metrics <- c("norm_num_dfos_per_joule", "norm_execution_time", "norm_cpu_utilisation", "norm_memory_usage")
+for (metric in normalized_metrics) {
+  print(metric)
+  grouped_data %>%
+    summarize(stest = shapiro.test(!!sym(metric))$p.value)
+}
