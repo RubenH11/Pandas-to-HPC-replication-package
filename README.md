@@ -12,9 +12,9 @@ You will also find a folder called `results`, which holds the raw measurement da
 ## Execution
 ### Preparation
 To get started, please clone this repository into your own device using the following command:
-'''
+```
     git clone https://github.com/RubenH11/Pandas-to-HPC-replication-package.git
-'''
+```
 
 Before you can execute the experiment, a few preparatory steps have to be taken.
 Firstly, you shall need the datasets used in this experiment. `small.csv` has already been provided in this repository, but `large.csv` is too large to provide directly, which is why we ask you to download it though the following link: https://www.kaggle.com/datasets/debashis74017/stock-market-data-nifty-100-stocks-5-min-data 
@@ -35,7 +35,7 @@ With the datasets ready, we can proceed to installing the required packages by e
 ### Running the experiment
 To run the experiment, run the following command <u>from the root folder</u>.
 ```
-    python experiment-runner/ pandas-to-hpc/RunnerConfig.py
+    python experiment-runner/ experiment/RunnerConfig.py
 ```
 Note that this will will run the experiment at the following configuration:
 - Iterations per run: 35 (a run should take at most 60s)
