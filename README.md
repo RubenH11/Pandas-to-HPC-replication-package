@@ -79,6 +79,13 @@ Full runs from the experiment can be found in the following compressed files, al
 
 ## Data Analysis Steps
 
+## Note for R studio
+
+Due to naming of 'DataFrame size' with space inbetween 
+there might be need for small fix before running
+in some systems DataFrame.size is the way to refer to the value / variable
+in some it has to be within `` and with space -> `DataFrame size`
+
 ### Measures of Central Tendency and Variability
 
 - The analysis computes the **mean** and **median** for energy usage in the TPCH dataset, comparing Pandas and Polars across different dataframe sizes (Small and Big).
@@ -87,7 +94,7 @@ Full runs from the experiment can be found in the following compressed files, al
 ### Normality Checks
 
 #### Visualize Data for Normality Checking
-- Density and violin plots are generated to visualize the distribution of energy usage for both small and big datasets, comparing the two libraries.
+- TODO Density and box plots are generated to visualize the distribution of energy usage for both small and big datasets, comparing the two libraries.
 
 #### QQ Plots
 - Quantile-Quantile (QQ) plots are created to assess the normality of the data distribution for small and big datasets for both Pandas and Polars.
