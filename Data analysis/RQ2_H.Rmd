@@ -1,0 +1,164 @@
+library(dplyr)
+library(effsize)
+
+df <- read.csv('run_table.csv')
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# adds DFO_type collumn which can take either value of COMPUTE either MEMORY
+# based on the DFO name:
+# 'isna', 'mean', 'sort', 'groupby', 'drop' is for COMPUTE, the rest are MEMORY
+
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'),
+                           'COMPUTE',
+                           'MEMORY'))
+                           
+# You can view the first few rows of the dataframe
+head(df)
+
+# Set DFO, Library, DataFrame.size, and DFO_type as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+df$`DataFrame size` <- as.factor(df$`DataFrame size`)
+df$DFO_type <- as.factor(df$DFO_type)
+
+levels(df$DFO)
+levels(df$Library)
+levels(df$`DataFrame size`)
+levels(df$DFO_type)
+
+
+# function for performing wilcoxon test
+perform_wilcoxon_test <- function(df, libraries, dataframe_size, dfo_type = NULL) {
+  df1 <- df %>%
+    filter(Library == libraries[1], `DataFrame size` == dataframe_size)
+  df2 <- df %>%
+    filter(Library == libraries[2], `DataFrame size` == dataframe_size)
+
+# filters also based on the dfo type
+  if (!is.null(dfo_type)) {
+    df1 <- df1 %>%
+      filter(DFO_type == dfo_type)
+    df2 <- df2 %>%
+      filter(DFO_type == dfo_type)
+  }
+
+    wilcox.test(df1$num_dfos_per_joule,
+              df2$num_dfos_per_joule)
+}
+
+# function for estimating effect size - cliffs delta
+# libraries are a collection of 2 elements - first element is the reference library
+# second is the comparative library
+perform_cliffs_delta <- function(df, libraries, dataframe_size, dfo_type = NULL) {
+
+# data is first filtered based on provided libraries and size
+  df1 <- df %>%
+    filter(Library == libraries[1], `DataFrame size` == dataframe_size)
+  df2 <- df %>%
+    filter(Library == libraries[2], `DataFrame size` == dataframe_size)
+
+  if (!is.null(dfo_type)) {
+    df1 <- df1 %>%
+      filter(DFO_type == dfo_type)
+    df2 <- df2 %>%
+      filter(DFO_type == dfo_type)
+  }
+
+  cliff.delta(df1$num_dfos_per_joule, df2$num_dfos_per_joule)
+}
+
+# .
+# .
+# wilcoxon tests
+# .
+# .
+
+# pandas modin
+results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Small", "MEMORY")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Large", "MEMORY")
+print(results)
+
+# pandas polars
+results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Small", "MEMORY")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Large", "MEMORY")
+print(results)
+
+# pandas dask
+results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Small", "MEMORY")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Large", "MEMORY")
+print(results)
+
+# .
+# .
+# cliffs delta
+# .
+# .
+
+# pandas modin
+results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Small", "MEMORY")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Large", "MEMORY")
+print(results)
+
+# pandas polars
+results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Small", "MEMORY")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Large", "MEMORY")
+print(results)
+
+# pandas dask
+results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Small", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Small", "MEMORY")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Large", "COMPUTE")
+print(results)
+
+results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Large", "MEMORY")
+print(results)
+
+
+
