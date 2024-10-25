@@ -1,5 +1,5 @@
 # Energy efficiency of Pandas versus HPC Libraries
-Welcome to the replication package of the 'Energy efficiency of Pandas versus HPC Libraries' experiment.
+Welcome to the replication package of the 'Energy efficiency of Pandas versus HPC Libraries' experiment. 
 This page will guide you though the process of replicating the experiment described in its associated paper.
 
 ## Table of contents
@@ -29,11 +29,11 @@ Firstly, you shall need the datasets used in this experiment. `small.csv` has al
 
 Once this dataset has been installed, please rename it to `large.csv` and move it to `assets/data/`
 
-Now execute the following command in your terminal <u>from the root folder of the cloned project</u> to turn your `large.csv` file into a `.parquet` file.
+Now execute the following command in your terminal <u>from the root folder of the cloned project</u> to turn your `large.csv` file into a `.parquet` file (this might take a while).
 ```
     python assets/data/createLargeParquet.py
 ```
-With the datasets ready, we can proceed to installing the required packages and EnergiBridge by executing the following commands <u>from the root folder</u>.
+With the datasets ready, we can proceed to installing the required packages and EnergiBridge by executing the following commands <u>from the root folder</u> (this might also take a while).
 
 ```
 git clone https://github.com/tdurieux/EnergiBridge.git 
