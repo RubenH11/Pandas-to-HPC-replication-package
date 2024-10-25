@@ -58,19 +58,17 @@ Note that this will will run the experiment at the following configuration:
 
 ## File Structure
 
-The data analysis is divided into **four R Markdown files** located in the repository:
+The data analysis is divided into **??? R Markdown files** located in the **Data Analysis** folder:
 
-1. **H1_Pandas_vs_Polars_Small.Rmd** - Analysis of energy usage for small datasets.
-2. **H1_Pandas_vs_Polars_Big.Rmd** - Analysis of energy usage for large datasets.
-3. **H2_Correlation_Analysis.Rmd** - Correlation analysis between energy usage and other metrics.
-4. **H2_Correlation_Analysis_Visuals.Rmd** - Visualization of the correlation analysis results.
+1. **RQ2_H.rmd** - Comparison of energy efficiency between Pandas and HPC libraries, in cases of Memory-bound and Compute-bound DFOs
+2. **RQ3_H.rmd** - Analysis of correlation between energy efficiency of libries and execution time, CPU usage and memory usage, respectively
+3. **further_research.rmd** - Comparison of energy efficiency between Polars and Dask, overall and in cases of Memory-bound and Compute-bound DFOs
 
 ### Required Data Files
 
-The data needed for running the scripts are located in the **Data** folder:
+The data needed for running the scripts are located in the **Data Analysis** folder:
 
-- **Run_Table_DAT.csv** - Contains the run data for Data Analysis Tasks.
-- **Run_Table_TPCH.csv** - Contains the run data for the TPCH Benchmarking.
+- **Run_Table.csv** - Contains the experiment results for conducting data analysis and all statistical tests
 
 Full runs from the experiment can be found in the following compressed files, also located in the **Data** folder:
 
@@ -94,10 +92,10 @@ in some it has to be within `` and with space -> `DataFrame size`
 ### Normality Checks
 
 #### Visualize Data for Normality Checking
-- TODO Density and box plots are generated to visualize the distribution of energy usage for both small and big datasets, comparing the two libraries.
+- Density and box plots are generated to visualize the distribution of energy efficiency for both small and large datasets, across all pairs of two libraries in question.
 
 #### QQ Plots
-- Quantile-Quantile (QQ) plots are created to assess the normality of the data distribution for small and big datasets for both Pandas and Polars.
+- Quantile-Quantile (QQ) plots are created to assess the normality of the data distribution for small and big datasets for all pairs of libraries in question (eg. Pandas - Polars).
 
 ### Skewness and Transformations
 
@@ -106,22 +104,21 @@ in some it has to be within `` and with space -> `DataFrame size`
 
 ### Normality Testing on Original Data
 
-- The **Shapiro-Wilk test** is conducted to assess the normality of the original data for both small and big datasets in Pandas and Polars, as well as for correlation analysis.
+- The **Shapiro-Wilk test** is conducted to assess the normality of the original data for both small and big datasets within the pair of libraries in question (eg. Pandas - Polars), as well as for correlation analysis.
 
 ### Hypothesis Testing
 
-- A **non-parametric Wilcoxon rank-sum test** is performed to compare energy usage between Pandas and Polars for both small and big datasets due to the non-normal distribution of the data.
-- Scatterplots are created to visually check correlations between variables.
+- RQ1 and RQ2: A **non-parametric Wilcoxon rank-sum test** is performed to compare energy usage between the pairs of libraries in question (eg. Pandas-Polars, Pandas-Modin, etc.) for both small and large datasets due to the non-normal distribution of the data.
+- RQ3:
+- -- Scatterplots are created to visually check correlations between energy efficiency of the library in question, and each of three metrics - execution time, cpu usage and memory usage.
+- -- Spearman's rank correlation is used for calculating correlation coefficient rho between the two metrics in question
 
 ### Effect Size Estimation
 
-- For the comparison between Pandas and Polars, **Cliff's Delta** is calculated for the big and small datasets separately, providing a measurement of effect size to quantify the differences in energy usage. Confidence intervals are also provided for interpretation.
+- For the comparison within the pair of libraries in question (eg. Pandas - Polars), **Cliff's Delta** is calculated for the big and small datasets separately, providing a measurement of effect size to quantify the differences in energy usage. Confidence intervals are also provided for interpretation.
+- Spearman's rank correlation method also calculates p-value which is used for estimating effect size for correlation between the metrics
 
 ## Running the Analysis
 
-The R Markdown files can be executed in RStudio, either in separate chunks or all together. Make sure the required data files are placed in the appropriate **Data** folder for the scripts to run correctly.
-
-## Conclusion
-
-This analysis aims to provide a comprehensive understanding of the energy efficiency of high-performance Python libraries, contributing to the ongoing research in sustainable software engineering practices.
+The R Markdown files can be executed in RStudio, either in separate chunks or all together. Make sure the required data files are placed in the appropriate **Data** folder for the scripts to run correctly. Make sure that your working directory is correctly set to the right directory where both the rmd and data files are located.
 
