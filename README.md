@@ -2,7 +2,14 @@
 Welcome to the replication package of the 'Energy efficiency of Pandas versus HPC Libraries' experiment.
 This page will guide you though the process of replicating the experiment described in its associated paper.
 
-## Structure
+## Table of contents
+- File structure
+- Execution
+  - Preparation
+  - Running the experiment
+- Analysis
+
+## File structure
 You will find two important folders that are specific to this experiment: `assets` and `experiment`. 
 - `assets` holds all of the assets used to run this experiment. This includes a `data` folder, which will hold the datasets to operate on, and the python code to turn these CSV files into parquet files. (If you are interested in why we use parquets, please read the Threats to Validity section of the paper.) Additionally, it holds the code to the combination of all 4 libraries and 9 data frame operations. Each DFO finds itself within a folder named after the library under test. These files all accept the keyword 'small' or 'large' as an argument, indicating which dataset to operate one, as well as a number, indicating how many times the DFO should be executed within a single run.
 - `experiment` holds the RunnerConfig.py file, which creates and populates the run table, handles measurements, and invokes the DFO files. After an execution of the experiment, it will also hold the run table and the logged measurements of runs in `runs/pandas_versus_hpc`.
