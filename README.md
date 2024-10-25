@@ -29,11 +29,11 @@ Firstly, you shall need the datasets used in this experiment. `small.csv` has al
 
 Once this dataset has been installed, please rename it to `large.csv` and move it to `assets/data/`
 
-Now execute the following command in your terminal <u>from the root folder of the cloned project</u> to turn your `large.csv` file into a `.parquet` file (this might take a while).
+Now execute the following command in your terminalfrom the root folder of the cloned project to turn your `large.csv` file into a `.parquet` file (this might take a while).
 ```
     python assets/data/createLargeParquet.py
 ```
-With the datasets ready, we can proceed to installing the required packages and EnergiBridge by executing the following commands <u>from the root folder</u> (this might also take a while).
+With the datasets ready, we can proceed to installing the required packages and EnergiBridge by executing the following commands from the root folder (this might also take a while).
 
 ```
 git clone https://github.com/tdurieux/EnergiBridge.git 
@@ -44,7 +44,7 @@ pip install -r requirements.txt
 ```
 
 ### Running the experiment
-To run the experiment, run the following command <u>from the root folder</u>.
+To run the experiment, run the following command from the root folder.
 ```
 python experiment-runner/ experiment/RunnerConfig.py
 ```
