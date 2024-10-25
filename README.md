@@ -13,7 +13,7 @@ You will also find a folder called `results`, which holds the raw measurement da
 ### Preparation
 To get started, please clone this repository into your own device using the following command:
 ```
-    git clone https://github.com/RubenH11/Pandas-to-HPC-replication-package.git
+git clone https://github.com/RubenH11/Pandas-to-HPC-replication-package.git
 ```
 
 Before you can execute the experiment, a few preparatory steps have to be taken.
@@ -22,24 +22,24 @@ Firstly, you shall need the datasets used in this experiment. `small.csv` has al
 
 Once this dataset has been installed, please rename it to `large.csv` and move it to `assets/data/`
 
-Now execute the following command in your terminal <u>from the root folder</u> to turn your `large.csv` file into a `.parquet` file.
+Now execute the following command in your terminal <u>from the root folder of the cloned project</u> to turn your `large.csv` file into a `.parquet` file.
 ```
     python assets/data/createLargeParquet.py
 ```
 With the datasets ready, we can proceed to installing the required packages and EnergiBridge by executing the following commands <u>from the root folder</u>.
 
 ```
-    git clone https://github.com/tdurieux/EnergiBridge.git 
-    cd EnergiBridge
-    cargo build -r;
-    cd ..                          
-    pip install -r requirements.txt
+git clone https://github.com/tdurieux/EnergiBridge.git 
+cd EnergiBridge
+cargo build -r;
+cd ..                          
+pip install -r requirements.txt
 ```
 
 ### Running the experiment
 To run the experiment, run the following command <u>from the root folder</u>.
 ```
-    python experiment-runner/ experiment/RunnerConfig.py
+python experiment-runner/ experiment/RunnerConfig.py
 ```
 Note that this will will run the experiment at the following configuration:
 - Iterations per run: 35 (a run should take at most 60s)
