@@ -21,13 +21,9 @@ Now execute the following command in your terminal <u>from the root folder</u> t
 ```
     python assets/data/createLargeParquet.py
 ```
-With the datasets ready, we can proceed to installing the required measurement library: `EnergiBridge`. Please execute the following commands <u>from the root folder</u> to do so.
+With the datasets ready, we can proceed to installing the required packages by executing the following command <u>from the root folder</u>.
 
 ```
-    git clone https://github.com/tdurieux/EnergiBridge.git
-    cd EnergiBridge
-    cargo build -r;
-    cd ..
     pip install -r requirements.txt
 ```
 
