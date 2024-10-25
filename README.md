@@ -55,3 +55,69 @@ Note that this will will run the experiment at the following configuration:
 - Measurements occur every: 0.3s
 
 ## Analysis
+
+## File Structure
+
+The data analysis is divided into **four R Markdown files** located in the repository:
+
+1. **H1_Pandas_vs_Polars_Small.Rmd** - Analysis of energy usage for small datasets.
+2. **H1_Pandas_vs_Polars_Big.Rmd** - Analysis of energy usage for large datasets.
+3. **H2_Correlation_Analysis.Rmd** - Correlation analysis between energy usage and other metrics.
+4. **H2_Correlation_Analysis_Visuals.Rmd** - Visualization of the correlation analysis results.
+
+### Required Data Files
+
+The data needed for running the scripts are located in the **Data** folder:
+
+- **Run_Table_DAT.csv** - Contains the run data for Data Analysis Tasks.
+- **Run_Table_TPCH.csv** - Contains the run data for the TPCH Benchmarking.
+
+Full runs from the experiment can be found in the following compressed files, also located in the **Data** folder:
+
+- **TPCH-FULLRUN.zip** - Full runs for TPCH Benchmarking.
+- **DAT-FULLRUN.zip** - Full runs for Data Analysis Tasks.
+
+## Data Analysis Steps
+
+### Measures of Central Tendency and Variability
+
+- The analysis computes the **mean** and **median** for energy usage in the TPCH dataset, comparing Pandas and Polars across different dataframe sizes (Small and Big).
+- It also calculates **standard deviation** and **variance** for further insights into the data distribution.
+
+### Normality Checks
+
+#### Visualize Data for Normality Checking
+- Density and violin plots are generated to visualize the distribution of energy usage for both small and big datasets, comparing the two libraries.
+
+#### QQ Plots
+- Quantile-Quantile (QQ) plots are created to assess the normality of the data distribution for small and big datasets for both Pandas and Polars.
+
+### Skewness and Transformations
+
+- The analysis checks for data skewness (positive or negative) and applies transformations (square root or power) to enhance normality.
+- The normality of the data is re-evaluated after transformations.
+
+### Normality Testing on Original Data
+
+- The **Shapiro-Wilk test** is conducted to assess the normality of the original data for both small and big datasets in Pandas and Polars, as well as for correlation analysis.
+
+### Hypothesis Testing
+
+- A **non-parametric Wilcoxon rank-sum test** is performed to compare energy usage between Pandas and Polars for both small and big datasets due to the non-normal distribution of the data.
+- Scatterplots are created to visually check correlations between variables.
+
+### Effect Size Estimation
+
+- For the comparison between Pandas and Polars, **Cliff's Delta** is calculated for the big and small datasets separately, providing a measurement of effect size to quantify the differences in energy usage. Confidence intervals are also provided for interpretation.
+
+## Running the Analysis
+
+The R Markdown files can be executed in RStudio, either in separate chunks or all together. Make sure the required data files are placed in the appropriate **Data** folder for the scripts to run correctly.
+
+## Conclusion
+
+This analysis aims to provide a comprehensive understanding of the energy efficiency of high-performance Python libraries, contributing to the ongoing research in sustainable software engineering practices.
+
+--- 
+
+Feel free to modify any sections as needed!
