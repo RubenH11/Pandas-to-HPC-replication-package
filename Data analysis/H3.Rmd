@@ -1,0 +1,67 @@
+library(dplyr)
+df <- read.csv('run_table.csv')
+
+# Convert memory usage from bytes to gigabytes
+df$memory_usage <- df$memory_usage / (1024^3)
+
+# adds DFO_type collumn which can take either value of COMPUTE either MEMORY
+# based on the DFO name:
+# 'isna', 'mean', 'sort', 'groupby', 'drop' is for COMPUTE, the rest are MEMORY
+df <- df %>%
+  mutate(DFO_type = ifelse(DFO %in% c('isna', 'mean', 'sort', 'groupby', 'drop'),
+                           'COMPUTE',
+                           'MEMORY'))
+                           
+# View the first few rows of the dataframe
+head(df)
+
+# Set DFO, Library, DataFrame.size, and DFO_type as factors
+df$DFO <- as.factor(df$DFO)
+df$Library <- as.factor(df$Library)
+# NOTE! due to naming of 'DataFrame size' with space inbetween 
+# there might be need for small fix before running
+# in some systems DataFrame.size is the way to refer to the value / variable
+# in some it has to be within `` 
+# and with space -> `DataFrame size` 
+df$'DataFrame size' <- as.factor(df$'DataFrame size')
+df$DFO_type <- as.factor(df$DFO_type)
+
+levels(df$DFO)
+levels(df$Library)
+levels(df$'DataFrame size')
+levels(df$DFO_type)
+
+# function that will be used for calculating rho and p-value
+correlate_energy_to_metric <- function(metric_collumn_1, metric_collumn_2) {
+  # Spearman's correlation for num_dfos_per_joule vs provided metric
+  cor_res <- cor.test(metric_collumn_1, metric_collumn_2, method = "spearman")
+  print(cor_res$estimate)
+  print(cor_res$p.value)
+}
+
+# function that calculates and prints rho and p-value for 
+# ele. ef. and all three metrics for the provided library
+correlate <- function(data, lib, df_size) {
+  filtered_df <- df %>% filter(Library == lib, 'DataFrame size' == df_size)
+
+  print(" energy and time :")
+  correlate_energy_to_metric(filtered_df$num_dfos_per_joule, filtered_df$execution_time)
+
+  print(" energy and memory :")
+  correlate_energy_to_metric(filtered_df$num_dfos_per_joule, filtered_df$memory_usage)
+
+  print(" energy and cpu :")
+  correlate_energy_to_metric(filtered_df$num_dfos_per_joule, filtered_df$cpu_utilisation)
+}
+
+correlate(df, "Pandas", "Small")
+correlate(df, "Pandas", "Large")
+
+correlate(df, "Polars", "Small")
+correlate(df, "Polars", "Large")
+
+correlate(df, "Modin", "Small")
+correlate(df, "Modin", "Large")
+
+correlate(df, "Dask", "Small")
+correlate(df, "Dask", "Large")
