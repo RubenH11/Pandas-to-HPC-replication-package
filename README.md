@@ -118,6 +118,3 @@ The R Markdown files can be executed in RStudio, either in separate chunks or al
 
 This analysis aims to provide a comprehensive understanding of the energy efficiency of high-performance Python libraries, contributing to the ongoing research in sustainable software engineering practices.
 
---- 
-
-Feel free to modify any sections as needed!
