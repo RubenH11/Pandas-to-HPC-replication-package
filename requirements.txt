@@ -1,0 +1,9 @@
+pandas
+psutil
+tabulate
+dill
+jsonpickle
+modin[ray]
+polars
+dask
+parquet
