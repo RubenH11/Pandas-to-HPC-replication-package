@@ -76,43 +76,17 @@ perform_cliffs_delta <- function(df, libraries, dataframe_size, dfo_type = NULL)
 # .
 # .
 
-# pandas modin
-results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Small", "COMPUTE")
+# polars dask
+results <- perform_wilcoxon_test(df, c("Polars", "Dask"), "Small", "COMPUTE")
 print(results)
 
-results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Small", "MEMORY")
+results <- perform_wilcoxon_test(df, c("Polars", "Dask"), "Small", "MEMORY")
 print(results)
 
-results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Large", "COMPUTE")
+results <- perform_wilcoxon_test(df, c("Polars", "Dask"), "Large", "COMPUTE")
 print(results)
 
-results <- perform_wilcoxon_test(df, c("Pandas", "Modin"), "Large", "MEMORY")
-print(results)
-
-# pandas polars
-results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Small", "COMPUTE")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Small", "MEMORY")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Large", "COMPUTE")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Polars"), "Large", "MEMORY")
-print(results)
-
-# pandas dask
-results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Small", "COMPUTE")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Small", "MEMORY")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Large", "COMPUTE")
-print(results)
-
-results <- perform_wilcoxon_test(df, c("Pandas", "Dask"), "Large", "MEMORY")
+results <- perform_wilcoxon_test(df, c("Polars", "Dask"), "Large", "MEMORY")
 print(results)
 
 # .
@@ -121,44 +95,15 @@ print(results)
 # .
 # .
 
-# pandas modin
-results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Small", "COMPUTE")
+# polars dask
+results <- perform_cliffs_delta(df, c("Polars", "Dask"), "Small", "COMPUTE")
 print(results)
 
-results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Small", "MEMORY")
+results <- perform_cliffs_delta(df, c("Polars", "Dask"), "Small", "MEMORY")
 print(results)
 
-results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Large", "COMPUTE")
+results <- perform_cliffs_delta(df, c(Polars", "Dask"), "Large", "COMPUTE")
 print(results)
 
-results <- perform_cliffs_delta(df, c("Pandas", "Modin"), "Large", "MEMORY")
+results <- perform_cliffs_delta(df, c("Polars", "Dask"), "Large", "MEMORY")
 print(results)
-
-# pandas polars
-results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Small", "COMPUTE")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Small", "MEMORY")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Large", "COMPUTE")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Polars"), "Large", "MEMORY")
-print(results)
-
-# pandas dask
-results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Small", "COMPUTE")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Small", "MEMORY")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Large", "COMPUTE")
-print(results)
-
-results <- perform_cliffs_delta(df, c("Pandas", "Dask"), "Large", "MEMORY")
-print(results)
-
-
-

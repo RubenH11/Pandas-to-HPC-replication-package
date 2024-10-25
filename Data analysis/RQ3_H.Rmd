@@ -23,12 +23,12 @@ df$Library <- as.factor(df$Library)
 # in some systems DataFrame.size is the way to refer to the value / variable
 # in some it has to be within `` 
 # and with space -> `DataFrame size` 
-df$'DataFrame size' <- as.factor(df$'DataFrame size')
+df$DataFrame.size <- as.factor(df$DataFrame.size)
 df$DFO_type <- as.factor(df$DFO_type)
 
 levels(df$DFO)
 levels(df$Library)
-levels(df$'DataFrame size')
+levels(df$DataFrame.size)
 levels(df$DFO_type)
 
 # function that will be used for calculating rho and p-value
@@ -42,7 +42,7 @@ correlate_energy_to_metric <- function(metric_collumn_1, metric_collumn_2) {
 # function that calculates and prints rho and p-value for 
 # ele. ef. and all three metrics for the provided library
 correlate <- function(data, lib, df_size) {
-  filtered_df <- df %>% filter(Library == lib, 'DataFrame size' == df_size)
+  filtered_df <- df %>% filter(Library == lib, DataFrame.size == df_size)
 
   print(" energy and time :")
   correlate_energy_to_metric(filtered_df$num_dfos_per_joule, filtered_df$execution_time)
