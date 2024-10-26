@@ -54,7 +54,7 @@ Note that this will run the experiment at the following configuration:
 - Cool-down time between runs: 20s
 - Measurements occur every: 0.3s
 
-# Data Analysis
+## Data Analysis
 
 ## Folder Structure
 
