@@ -55,7 +55,9 @@ Note that this will run the experiment at the following configuration:
 - Measurements occur every: 0.3s
 
 ## Data Analysis
-
+#### Upon receiving the results of the experiment, we realised it is necessary to preprocess the data before starting the analysis phase, the data has been transformed as follows:
+- Converted the memory usage logs to Gigabytes for easier interpretation and readability.
+- Added a column for DFO type classification.
 ## Folder Structure
 
 The analysis part is organized into the following folders and files:
