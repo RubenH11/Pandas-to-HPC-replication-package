@@ -48,53 +48,53 @@ To run the experiment, run the following command from the root folder.
 ```
 python experiment-runner/ experiment/RunnerConfig.py
 ```
-Note that this will will run the experiment at the following configuration:
+Note that this will run the experiment at the following configuration:
 - Iterations per run: 35 (a run should take at most 60s)
 - Repetitions of runs: 20
 - Cool-down time between runs: 20s
 - Measurements occur every: 0.3s
 
-Folder Structure
-The project is organized into the following folders and files:
+# Data Analysis
 
-Data Analysis Folder (/Data analysis/)
-This folder contains all R Markdown (.Rmd) files used for data analysis, statistical testing, and visualizations. Each file addresses specific aspects of the analysis:
+## Folder Structure
 
-EDA_Statistical_analysis.Rmd: Conducts exploratory data analysis (EDA) with a focus on statistical summaries and measures of central tendency (mean, median, variance, standard deviation) for energy efficiency and performance metrics across libraries and dataset sizes.
+The analysis part is organized into the following folders and files:
 
-EDA_Visual_analysis.Rmd: Contains visual EDA methods, generating plots (density, box plots) for an overview of data distribution, energy efficiency, and performance across libraries.
+### **Data Analysis Folder (`/Data analysis/`)**
+This folder contains all R Markdown (`.Rmd`) files used for data analysis, statistical testing, and visualizations. Each file addresses specific aspects of the analysis:
 
-Normality_testing.Rmd: Checks for data normality using the Shapiro-Wilk test, QQ-plots, and skewness assessments. The BestNormalize transformation is applied if skewness is identified, with normality re-evaluated post-transformation.
+1. **`EDA_Statistical_analysis.Rmd`**: Conducts exploratory data analysis (EDA) with a focus on statistical summaries and measures of central tendency (mean, median, variance, standard deviation) for energy efficiency and performance metrics across libraries and dataset sizes.
 
-RQ1_H.Rmd: Compares energy efficiency between Pandas and other HPC libraries (Polars, Dask, Modin), analyzing both small and large datasets.
+2. **`EDA_Visual_analysis.Rmd`**: Contains visual EDA methods, generating plots (density, box plots) for an overview of data distribution, energy efficiency, and performance across libraries.
 
-RQ2_H.Rmd: Compares energy efficiency across libraries, focusing on memory-bound versus compute-bound DataFrame operations (DFOs) for Pandas and HPC libraries.
+3. **`Normality_testing.Rmd`**: Checks for data normality using the Shapiro-Wilk test, QQ-plots, and skewness assessments. The BestNormalize transformation is applied if skewness is identified, with normality re-evaluated post-transformation.
 
-RQ3_H.Rmd: Explores correlations between energy efficiency and execution metrics (execution time, CPU usage, memory usage) across libraries.
+4. **`RQ1_H.Rmd`**: Compares energy efficiency between Pandas and other HPC libraries (Polars, Dask, Modin), analyzing both small and large datasets.
 
-further_research.Rmd: Provides additional analysis focused on comparing Polars and Dask, analyzing energy efficiency both overall and across specific DFOs (memory-bound and compute-bound).
+5. **`RQ2_H.Rmd`**: Compares energy efficiency across libraries, focusing on memory-bound versus compute-bound DataFrame operations (DFOs) for Pandas and HPC libraries.
 
-Figures Folder (/Figures/)
+6. **`RQ3_H.Rmd`**: Explores correlations between energy efficiency and execution metrics (execution time, CPU usage, memory usage) across libraries.
+
+7. **`further_research.Rmd`**: Provides additional analysis focused on comparing Polars and Dask, analyzing energy efficiency both overall and across specific DFOs (memory-bound and compute-bound).
+
+### **Figures Folder (`/Figures/`)**
 Contains generated figures and visualizations from the analysis scripts.
 
-Data Files
-run_table.csv: Main dataset containing experiment results used across all .Rmd files for analysis and statistical testing.
-Data Analysis Summary
-Measures of Central Tendency and Variability
-EDA scripts calculate mean, median, variance, and standard deviation for energy efficiency and execution metrics across libraries (Pandas, Polars, Dask, Modin) and data sizes (small and large).
-Normality Checks
-Shapiro-Wilk Test: Used to assess the normality of the data.
-Visualizations: Density and QQ-plots illustrate distribution patterns.
-Transformations: BestNormalize function applies transformations to reduce skewness, improving data normality.
-Hypothesis Testing
-RQ1 & RQ2: Wilcoxon rank-sum test compares energy efficiency between Pandas and each HPC library for both dataset sizes.
-RQ3: Spearman’s Rank Correlation Test examines correlations between energy efficiency and execution metrics (execution time, CPU usage, memory usage).
-Effect Size Estimation
-Cliff's Delta: Used for estimating effect size in library comparisons by dataset size.
-Spearman’s Rank Correlation p-values: Indicate effect size in correlation analyses.
-Running the Analysis
-Place the required run_table.csv file in the Data analysis folder.
-Open RStudio, set the working directory to the Data analysis folder, and run each .Rmd file as needed.
+### **Data Files**
+- **`run_table.csv`**: Main dataset containing experiment results used across all `.Rmd` files for analysis and statistical testing.
+
+#### Alternatively, you can view the results of our analysis in Jupyter notebooks [here](https://drive.google.com/drive/folders/1HalwpTdJYJ_vVkxWj5tTQ5wIfLsPoFgy?usp=sharing). Do not forget to change runtime to "R" if you intend to run the notebooks.
+
+## Data Analysis Summary
+
+### Measures of Central Tendency and Variability
+- EDA scripts calculate mean, median, variance, and standard deviation for energy efficiency and execution metrics across libraries (Pandas, Polars, Dask, Modin) and data sizes (small and large).
+
+### Normality Checks
+- **Shapiro-Wilk Test**: Used to assess the normality of the data.
+- **Visualizations**: Density and QQ-plots illustrate distribution patterns.
+- **Transformations**: BestNormalize function applies transformations to reduce skewness, improving data normality.
+
 
 ### Hypothesis Testing
 
