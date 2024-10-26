@@ -54,57 +54,47 @@ Note that this will will run the experiment at the following configuration:
 - Cool-down time between runs: 20s
 - Measurements occur every: 0.3s
 
-## Analysis
+Folder Structure
+The project is organized into the following folders and files:
 
-## File Structure
+Data Analysis Folder (/Data analysis/)
+This folder contains all R Markdown (.Rmd) files used for data analysis, statistical testing, and visualizations. Each file addresses specific aspects of the analysis:
 
-The data analysis is divided into **??? R Markdown files** located in the **Data Analysis** folder:
+EDA_Statistical_analysis.Rmd: Conducts exploratory data analysis (EDA) with a focus on statistical summaries and measures of central tendency (mean, median, variance, standard deviation) for energy efficiency and performance metrics across libraries and dataset sizes.
 
-1. **RQ2_H.rmd** - Comparison of energy efficiency between Pandas and HPC libraries, in cases of Memory-bound and Compute-bound DFOs
-2. **RQ3_H.rmd** - Analysis of correlation between energy efficiency of libries and execution time, CPU usage and memory usage, respectively
-3. **further_research.rmd** - Comparison of energy efficiency between Polars and Dask, overall and in cases of Memory-bound and Compute-bound DFOs
+EDA_Visual_analysis.Rmd: Contains visual EDA methods, generating plots (density, box plots) for an overview of data distribution, energy efficiency, and performance across libraries.
 
-### Required Data Files
+Normality_testing.Rmd: Checks for data normality using the Shapiro-Wilk test, QQ-plots, and skewness assessments. The BestNormalize transformation is applied if skewness is identified, with normality re-evaluated post-transformation.
 
-The data needed for running the scripts are located in the **Data Analysis** folder:
+RQ1_H.Rmd: Compares energy efficiency between Pandas and other HPC libraries (Polars, Dask, Modin), analyzing both small and large datasets.
 
-- **Run_Table.csv** - Contains the experiment results for conducting data analysis and all statistical tests
+RQ2_H.Rmd: Compares energy efficiency across libraries, focusing on memory-bound versus compute-bound DataFrame operations (DFOs) for Pandas and HPC libraries.
 
-Full runs from the experiment can be found in the following compressed files, also located in the **Data** folder:
+RQ3_H.Rmd: Explores correlations between energy efficiency and execution metrics (execution time, CPU usage, memory usage) across libraries.
 
-- **TPCH-FULLRUN.zip** - Full runs for TPCH Benchmarking.
-- **DAT-FULLRUN.zip** - Full runs for Data Analysis Tasks.
+further_research.Rmd: Provides additional analysis focused on comparing Polars and Dask, analyzing energy efficiency both overall and across specific DFOs (memory-bound and compute-bound).
 
-## Data Analysis Steps
+Figures Folder (/Figures/)
+Contains generated figures and visualizations from the analysis scripts.
 
-## Note for R studio
-
-Due to naming of 'DataFrame size' with space inbetween 
-there might be need for small fix before running
-in some systems DataFrame.size is the way to refer to the value / variable
-in some it has to be within `` and with space -> `DataFrame size`
-
-### Measures of Central Tendency and Variability
-
-- The analysis computes the **mean** and **median** for energy usage in the TPCH dataset, comparing Pandas and Polars across different dataframe sizes (Small and Big).
-- It also calculates **standard deviation** and **variance** for further insights into the data distribution.
-
-### Normality Checks
-
-#### Visualize Data for Normality Checking
-- Density and box plots are generated to visualize the distribution of energy efficiency for both small and large datasets, across all pairs of two libraries in question.
-
-#### QQ Plots
-- Quantile-Quantile (QQ) plots are created to assess the normality of the data distribution for small and big datasets for all pairs of libraries in question (eg. Pandas - Polars).
-
-### Skewness and Transformations
-
-- The analysis checks for data skewness (positive or negative) and applies transformations (square root or power) to enhance normality.
-- The normality of the data is re-evaluated after transformations.
-
-### Normality Testing on Original Data
-
-- The **Shapiro-Wilk test** is conducted to assess the normality of the original data for both small and big datasets within the pair of libraries in question (eg. Pandas - Polars), as well as for correlation analysis.
+Data Files
+run_table.csv: Main dataset containing experiment results used across all .Rmd files for analysis and statistical testing.
+Data Analysis Summary
+Measures of Central Tendency and Variability
+EDA scripts calculate mean, median, variance, and standard deviation for energy efficiency and execution metrics across libraries (Pandas, Polars, Dask, Modin) and data sizes (small and large).
+Normality Checks
+Shapiro-Wilk Test: Used to assess the normality of the data.
+Visualizations: Density and QQ-plots illustrate distribution patterns.
+Transformations: BestNormalize function applies transformations to reduce skewness, improving data normality.
+Hypothesis Testing
+RQ1 & RQ2: Wilcoxon rank-sum test compares energy efficiency between Pandas and each HPC library for both dataset sizes.
+RQ3: Spearman’s Rank Correlation Test examines correlations between energy efficiency and execution metrics (execution time, CPU usage, memory usage).
+Effect Size Estimation
+Cliff's Delta: Used for estimating effect size in library comparisons by dataset size.
+Spearman’s Rank Correlation p-values: Indicate effect size in correlation analyses.
+Running the Analysis
+Place the required run_table.csv file in the Data analysis folder.
+Open RStudio, set the working directory to the Data analysis folder, and run each .Rmd file as needed.
 
 ### Hypothesis Testing
 
